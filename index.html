@@ -120,13 +120,22 @@ select:focus,input[type=number]:focus,input[type=text]:focus{outline:none;border
 .milk-hint{font-size:11px;color:var(--text3);background:var(--cream2);border-radius:8px;padding:6px 10px;margin-top:4px;line-height:1.5;}
 .milk-hint.warning{background:var(--terra-light);color:var(--terra);}
 
-/* ── REG FIELD ── */
-.reg-row{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
-.reg-label{font-size:14px;font-weight:500;color:var(--text);flex:1;min-width:160px;}
-.reg-label small{display:block;font-size:11px;color:var(--text3);font-weight:400;margin-top:2px;}
-.reg-input-wrap{display:flex;align-items:center;gap:6px;}
+/* ── COST TABLE ── */
+.cost-table{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.cost-group-header{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);background:var(--cream);padding:8px 16px;border-bottom:1px solid var(--border);}
+.cost-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.cost-row:last-child{border-bottom:none}
+.cost-row:hover{background:var(--cream)}
+.cost-row-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+.cost-row-icon{font-size:20px;line-height:1;flex-shrink:0;width:28px;text-align:center;}
+.cost-row-name{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.cost-row-badge{font-size:10px;font-weight:600;background:var(--forest-light);color:var(--forest);border-radius:10px;padding:2px 8px;}
+.cost-row-desc{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.4;}
+.cost-row-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.cost-ksh{font-size:12px;color:var(--text2);font-weight:500;white-space:nowrap;}
+.cost-row-right input[type=number]{width:110px;text-align:right;font-weight:500;}
+/* ── REG FIELD (legacy, keep for compat) ── */
 .currency-prefix{font-size:13px;color:var(--text2);font-weight:500;white-space:nowrap;}
-.reg-input{width:130px!important;}
 
 /* ── MALE TOGGLE ── */
 .male-row{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;}
@@ -241,26 +250,141 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
 
 <div class="page">
 
-  <!-- ════════ STEP 1: REGISTRATION ════════ -->
+  <!-- ════════ STEP 1: INVESTMENT BREAKDOWN ════════ -->
   <div class="section">
     <div class="step-label"><span class="step-num">1</span> Farm setup costs</div>
     <div class="section-title">Your starting investment</div>
-    <p class="section-desc">Enter your registration fee and the details of every animal you're purchasing. Each goat can have a different breed, age, and purchase price.</p>
+    <p class="section-desc">Every cost that goes into getting your farm started. Edit any line — the total and break-even update instantly.</p>
 
-    <!-- Registration fee -->
-    <div class="reg-row">
-      <div class="reg-label">
-        Registration / setup fee
-        <small>One-time program or farm registration cost</small>
+    <!-- Itemised cost table -->
+    <div class="cost-table">
+
+      <div class="cost-group-header">📋 Program &amp; admin</div>
+
+      <div class="cost-row">
+        <div class="cost-row-left">
+          <div class="cost-row-icon">📝</div>
+          <div>
+            <div class="cost-row-name">Registration fee</div>
+            <div class="cost-row-desc">One-time program or farm registration</div>
+          </div>
+        </div>
+        <div class="cost-row-right">
+          <span class="cost-ksh">Ksh</span>
+          <input type="number" id="cost-reg" value="6000" min="0" step="500" oninput="onAnyChange()">
+        </div>
       </div>
-      <div class="reg-input-wrap">
-        <span class="currency-prefix">Ksh</span>
-        <input type="number" id="reg-fee" class="reg-input" value="6000" min="0" step="500" oninput="onAnyChange()">
+
+      <div class="cost-group-header">🐐 Animals</div>
+
+      <div class="cost-row cost-row-dynamic" id="cost-animals-row">
+        <div class="cost-row-left">
+          <div class="cost-row-icon">🐐</div>
+          <div>
+            <div class="cost-row-name">Goat purchase cost <span class="cost-row-badge" id="cost-animals-badge">0 animals</span></div>
+            <div class="cost-row-desc" id="cost-animals-desc">Add animals in Step 2 — each purchase price is tracked individually</div>
+          </div>
+        </div>
+        <div class="cost-row-right">
+          <span class="cost-ksh">Ksh</span>
+          <input type="number" id="cost-animals" value="0" min="0" step="500" readonly style="background:var(--cream2);color:var(--text3);cursor:default;">
+        </div>
       </div>
-    </div>
+
+      <div class="cost-group-header">🌾 Starter inputs</div>
+
+      <div class="cost-row">
+        <div class="cost-row-left">
+          <div class="cost-row-icon">🌿</div>
+          <div>
+            <div class="cost-row-name">Feed starter pack</div>
+            <div class="cost-row-desc">Initial supply of hay, concentrates &amp; mineral lick</div>
+          </div>
+        </div>
+        <div class="cost-row-right">
+          <span class="cost-ksh">Ksh</span>
+          <input type="number" id="cost-feed" value="8000" min="0" step="500" oninput="onAnyChange()">
+        </div>
+      </div>
+
+      <div class="cost-row">
+        <div class="cost-row-left">
+          <div class="cost-row-icon">🏠</div>
+          <div>
+            <div class="cost-row-name">Housing / pen setup</div>
+            <div class="cost-row-desc">Basic goat shed, fencing, feeders &amp; water troughs</div>
+          </div>
+        </div>
+        <div class="cost-row-right">
+          <span class="cost-ksh">Ksh</span>
+          <input type="number" id="cost-housing" value="0" min="0" step="500" oninput="onAnyChange()">
+        </div>
+      </div>
+
+      <div class="cost-group-header">🏥 Health &amp; protection</div>
+
+      <div class="cost-row">
+        <div class="cost-row-left">
+          <div class="cost-row-icon">🛡️</div>
+          <div>
+            <div class="cost-row-name">Imfuyo SP insurance</div>
+            <div class="cost-row-desc">Livestock insurance coverage (annual premium)</div>
+          </div>
+        </div>
+        <div class="cost-row-right">
+          <span class="cost-ksh">Ksh</span>
+          <input type="number" id="cost-insurance" value="5000" min="0" step="500" oninput="onAnyChange()">
+        </div>
+      </div>
+
+      <div class="cost-row">
+        <div class="cost-row-left">
+          <div class="cost-row-icon">💉</div>
+          <div>
+            <div class="cost-row-name">Initial vet &amp; vaccinations</div>
+            <div class="cost-row-desc">Health check, deworming, core vaccines on arrival</div>
+          </div>
+        </div>
+        <div class="cost-row-right">
+          <span class="cost-ksh">Ksh</span>
+          <input type="number" id="cost-vet" value="3000" min="0" step="500" oninput="onAnyChange()">
+        </div>
+      </div>
+
+      <div class="cost-group-header">🚚 Logistics</div>
+
+      <div class="cost-row">
+        <div class="cost-row-left">
+          <div class="cost-row-icon">🚛</div>
+          <div>
+            <div class="cost-row-name">Transport &amp; delivery</div>
+            <div class="cost-row-desc">Delivery of animals and supplies to your farm</div>
+          </div>
+        </div>
+        <div class="cost-row-right">
+          <span class="cost-ksh">Ksh</span>
+          <input type="number" id="cost-logistics" value="2000" min="0" step="500" oninput="onAnyChange()">
+        </div>
+      </div>
+
+      <div class="cost-row">
+        <div class="cost-row-left">
+          <div class="cost-row-icon">📦</div>
+          <div>
+            <div class="cost-row-name">Other / miscellaneous</div>
+            <div class="cost-row-desc">Equipment, tagging, any extra setup costs</div>
+          </div>
+        </div>
+        <div class="cost-row-right">
+          <span class="cost-ksh">Ksh</span>
+          <input type="number" id="cost-misc" value="0" min="0" step="500" oninput="onAnyChange()">
+        </div>
+      </div>
+
+    </div><!-- /cost-table -->
 
     <!-- Investment summary card -->
-    <div class="inv-card" id="inv-card">
+    <div class="inv-card" style="margin-top:16px">
       <div class="inv-total-label">Total investment</div>
       <div class="inv-total-value" id="inv-total">Ksh 0</div>
       <div class="inv-breakdown" id="inv-breakdown"></div>
@@ -644,27 +768,46 @@ function escHtml(s) {
 }
 
 // ─── INVESTMENT CARD ──────────────────────────────────────────────────────────
+function getv(id) { const el = document.getElementById(id); return el ? (+el.value || 0) : 0; }
+
 function updateInvestmentCard() {
-  const regFee = +document.getElementById('reg-fee').value || 0;
+  // Sync animal cost field (read-only, driven by roster)
   const goatSpend = animals.reduce((s, a) => s + (a.purchasePrice || 0), 0);
-  const total = regFee + goatSpend;
+  const animalsInput = document.getElementById('cost-animals');
+  if (animalsInput) animalsInput.value = goatSpend;
+  const badge = document.getElementById('cost-animals-badge');
+  if (badge) badge.textContent = `${animals.length} animal${animals.length !== 1 ? 's' : ''}`;
+  const desc = document.getElementById('cost-animals-desc');
+  if (desc) desc.textContent = animals.length > 0
+    ? animals.map(a => `${escHtml(a.name)}: Ksh ${Number(a.purchasePrice).toLocaleString()}`).join(' · ')
+    : 'Add animals in Step 2 — each purchase price is tracked individually';
+
+  const costs = {
+    reg:       { label: 'Registration',   val: getv('cost-reg'),       icon: '📝' },
+    animals:   { label: 'Goats',          val: goatSpend,              icon: '🐐' },
+    feed:      { label: 'Feed starter',   val: getv('cost-feed'),      icon: '🌿' },
+    housing:   { label: 'Housing / pen',  val: getv('cost-housing'),   icon: '🏠' },
+    insurance: { label: 'Insurance',      val: getv('cost-insurance'), icon: '🛡️' },
+    vet:       { label: 'Vet & vaccines', val: getv('cost-vet'),       icon: '💉' },
+    logistics: { label: 'Transport',      val: getv('cost-logistics'), icon: '🚛' },
+    misc:      { label: 'Misc.',          val: getv('cost-misc'),      icon: '📦' },
+  };
+
+  const total = Object.values(costs).reduce((s, c) => s + c.val, 0);
   S.totalInvestment = total;
 
   document.getElementById('inv-total').textContent = `Ksh ${total.toLocaleString()}`;
 
-  let breakdown = `
+  const nonZero = Object.values(costs).filter(c => c.val > 0);
+  const breakdown = nonZero.map(c => `
     <div class="inv-item">
-      <div class="inv-item-label">Registration / setup</div>
-      <div class="inv-item-val">Ksh ${regFee.toLocaleString()}</div>
-      <div class="inv-item-sub">One-time fee</div>
-    </div>
-    <div class="inv-item">
-      <div class="inv-item-label">Animals (${animals.length})</div>
-      <div class="inv-item-val">Ksh ${goatSpend.toLocaleString()}</div>
-      <div class="inv-item-sub">${animals.length > 0 ? animals.map(a => `${escHtml(a.name)}: Ksh ${Number(a.purchasePrice).toLocaleString()}`).join(' · ') : 'No animals added yet'}</div>
-    </div>`;
+      <div class="inv-item-label">${c.icon} ${c.label}</div>
+      <div class="inv-item-val">Ksh ${c.val.toLocaleString()}</div>
+      <div class="inv-item-sub">${Math.round(total > 0 ? c.val / total * 100 : 0)}% of total</div>
+    </div>`).join('');
 
-  document.getElementById('inv-breakdown').innerHTML = breakdown;
+  document.getElementById('inv-breakdown').innerHTML = breakdown ||
+    `<div class="inv-item"><div class="inv-item-label">No costs entered yet</div><div class="inv-item-val">Ksh 0</div></div>`;
 }
 
 // ─── SIMULATION ───────────────────────────────────────────────────────────────
