@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MbuziPlus Simulator V.1 — Dairy Goat ROI</title>
+  <link rel="stylesheet" href="mbuziplus.css">
+</head>
+<body>
+
+<!-- ─── HEADER ─────────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="logo-block">
+    <div class="logo-icon">🐐</div>
+    <div class="logo-text">
+      <h1>MbuziPlus</h1>
+      <span>Dairy Goat ROI Simulator</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span class="header-badge">V.1</span>
+    <span style="font-size:12px;color:var(--green-300);">Total investment: <strong style="color:#fff;">Ksh 60,000</strong></span>
+  </div>
+</header>
+
+<!-- ─── APP BODY ────────────────────────────────────────────────────────────── -->
+<div class="app-body">
+
+  <!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <!-- Investment breakdown -->
+    <div class="sidebar-section">
+      <div class="section-title">Investment breakdown</div>
+      <div class="inv-row"><span class="inv-label">Registration fee</span><span class="inv-val">Ksh 6,000</span></div>
+      <div class="inv-row"><span class="inv-label">Goats × 2</span><span class="inv-val">incl.</span></div>
+      <div class="inv-row"><span class="inv-label">Feed concentrate</span><span class="inv-val">incl.</span></div>
+      <div class="inv-row"><span class="inv-label">Insurance (Imfuyo SP)</span><span class="inv-val">incl.</span></div>
+      <div class="inv-row"><span class="inv-label">Vet care + logistics</span><span class="inv-val">incl.</span></div>
+      <div class="inv-total">
+        <span class="inv-label">Total investment</span>
+        <span class="inv-val">60,000</span>
+      </div>
+    </div>
+
+    <!-- Your goats -->
+    <div class="sidebar-section">
+      <div class="section-title">Your goats</div>
+      <div id="goat-list"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="addGoat('doe')">+ Add doe</button>
+        <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="addGoat('buck')">+ Add buck</button>
+      </div>
+    </div>
+
+    <!-- Program toggles -->
+    <div class="sidebar-section">
+      <div class="section-title">Program options</div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <span class="toggle-label">Group male goat (buck)</span>
+          <span class="toggle-desc">Shared program asset — enables breeding &amp; herd growth</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-male">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div id="male-arrive-row" style="display:none;align-items:center;justify-content:space-between;padding:8px 0 4px;">
+        <span style="font-size:12px;color:var(--text-secondary);">Male arrives at month</span>
+        <input type="number" id="male-arrive-month" min="1" max="6" value="2" style="width:60px;font-size:13px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--r-sm);text-align:center;">
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <span class="toggle-label">Auto-sell male kids</span>
+          <span class="toggle-desc">Sell male offspring at 5 months (Ksh set below)</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-autosell" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Market settings -->
+    <div class="sidebar-section">
+      <div class="section-title">Market &amp; cost assumptions</div>
+      <div id="settings-area"></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="sidebar-section">
+      <div class="section-title">Breed milk reference</div>
+      <table style="width:100%;font-size:11px;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:4px 0;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);">Breed</th>
+            <th style="text-align:right;padding:4px 0;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);">Litres/day</th>
+            <th style="text-align:right;padding:4px 0;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);">1st lact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:4px 0;">Saanen</td><td style="text-align:right;color:var(--green-700);">2.5–4.5 L</td><td style="text-align:right;">10 mo</td></tr>
+          <tr><td style="padding:4px 0;">Alpine</td><td style="text-align:right;color:var(--green-700);">2.0–3.5 L</td><td style="text-align:right;">12 mo</td></tr>
+          <tr><td style="padding:4px 0;">Toggenburg</td><td style="text-align:right;color:var(--green-700);">1.5–3.0 L</td><td style="text-align:right;">12 mo</td></tr>
+          <tr><td style="padding:4px 0;">Crossbreed</td><td style="text-align:right;">1.2–2.5 L</td><td style="text-align:right;">12 mo</td></tr>
+          <tr><td style="padding:4px 0;">Galla</td><td style="text-align:right;">0.5–1.5 L</td><td style="text-align:right;">14 mo</td></tr>
+          <tr><td style="padding:4px 0;">East African</td><td style="text-align:right;">0.3–1.0 L</td><td style="text-align:right;">15 mo</td></tr>
+          <tr><td style="padding:4px 0;">Boer</td><td style="text-align:right;color:var(--text-muted);">0.5–1.0 L</td><td style="text-align:right;">14 mo</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--text-muted);margin-top:8px;">Lactation: 5 mo active + 2 mo dry. Gestation: 5 mo. Kids/birth: 1–2 avg.</p>
+    </div>
+
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══════════════════════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- ── Summary metrics ── -->
+    <div class="metrics-grid">
+      <div class="metric-card highlight">
+        <div class="metric-label">Break-even month</div>
+        <div class="metric-value amber" id="m-breakeven">—</div>
+        <div class="metric-sub">After Ksh 60,000 recovered</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Net profit (end of sim)</div>
+        <div class="metric-value green" id="m-net-profit">—</div>
+        <div class="metric-sub">After all costs deducted</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Herd size (end)</div>
+        <div class="metric-value blue" id="m-herd">—</div>
+        <div class="metric-sub">Total animals alive</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Income this month</div>
+        <div class="metric-value" id="m-monthly-income">—</div>
+        <div class="metric-sub">Gross (milk + manure + sales)</div>
+      </div>
+    </div>
+
+    <!-- ── Timeline scrubber ── -->
+    <div class="timeline-bar">
+      <div class="timeline-header">
+        <span class="timeline-title">Timeline scrubber</span>
+        <span class="timeline-month-display" id="current-month-display">Month 36</span>
+      </div>
+      <div class="timeline-controls">
+        <button class="play-btn" onclick="togglePlay()" title="Play / Pause">
+          <span id="play-btn-icon">▶</span>
+        </button>
+        <input type="range" id="timeline-slider" min="1" max="36" value="36" step="1">
+      </div>
+      <div class="month-ticks">
+        <span>M1</span><span>M6</span><span>M12</span><span>M18</span><span>M24</span><span>M30</span><span>M36</span>
+      </div>
+    </div>
+
+    <!-- ── Milestone strip ── -->
+    <div id="milestone-strip" class="milestone-strip"></div>
+
+    <!-- ── Snapshot for current month ── -->
+    <div id="snapshot-strip" class="snapshot-strip"></div>
+
+    <!-- ── Tabs ── -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="overview">Income vs investment</button>
+      <button class="tab-btn" data-tab="herd">Herd growth</button>
+      <button class="tab-btn" data-tab="breakdown">Income mix</button>
+      <button class="tab-btn" data-tab="table">Month-by-month</button>
+    </div>
+
+    <!-- ── Panel: Overview ── -->
+    <div id="panel-overview" class="panel active">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Monthly income streams vs costs — cumulative net</div>
+            <div class="chart-card-sub">Bars = monthly income by source. Green line = cumulative net. Red dashed = Ksh 60,000 investment.</div>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="leg"><span class="leg-swatch" style="background:#2d8a22;"></span>Milk income</span>
+          <span class="leg"><span class="leg-swatch" style="background:#9FE1CB;"></span>Manure income</span>
+          <span class="leg"><span class="leg-swatch" style="background:#EF9F27;"></span>Animal sales</span>
+          <span class="leg"><span class="leg-swatch" style="background:#b83232;"></span>Feed costs (negative)</span>
+          <span class="leg"><span class="leg-swatch" style="background:#1a4f14; width:20px; height:3px; border-radius:1px; margin-top:4px;"></span>Cumulative net</span>
+          <span class="leg"><span class="leg-swatch" style="background:#b83232; width:20px; height:3px; border-radius:1px; margin-top:4px; border-top:1px dashed #b83232; background:transparent;"></span>Investment line</span>
+        </div>
+        <div class="chart-wrap" style="height:320px;">
+          <canvas id="chart-growth" role="img" aria-label="Stacked bar chart showing monthly milk, manure, and animal sale income over time, with feed costs negative, and cumulative net income as a line versus the investment reference line of Ksh 60000.">Monthly income vs investment line over simulation period.</canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel: Herd ── -->
+    <div id="panel-herd" class="panel">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Herd growth over time</div>
+            <div class="chart-card-sub">Total animals, does, lactating, and pregnant — step changes show births and sales.</div>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="leg"><span class="leg-swatch" style="background:#1a6abf;"></span>Total herd</span>
+          <span class="leg"><span class="leg-swatch" style="background:#2d8a22;"></span>Does (active)</span>
+          <span class="leg"><span class="leg-swatch" style="background:#f5a623;"></span>Lactating</span>
+          <span class="leg"><span class="leg-swatch" style="background:#9F77DD;"></span>Pregnant</span>
+        </div>
+        <div class="chart-wrap" style="height:320px;">
+          <canvas id="chart-herd" role="img" aria-label="Line chart showing total herd size, does, lactating, and pregnant animals over the simulation months. Step changes represent births and animal sales.">Herd growth including does, lactating, and pregnant animals over time.</canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel: Income breakdown ── -->
+    <div id="panel-breakdown" class="panel">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Total income mix (full simulation)</div>
+            <div class="chart-card-sub">Proportional contribution of each income stream over the entire period.</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:center;">
+          <div class="chart-wrap" style="height:260px;">
+            <canvas id="chart-breakdown" role="img" aria-label="Doughnut chart showing proportion of total income from milk, manure sales, and animal sales over the full simulation period.">Income mix: milk, manure, and animal sales proportions.</canvas>
+          </div>
+          <div id="breakdown-detail">
+            <div style="margin-bottom:1rem;">
+              <div class="legend" style="flex-direction:column;gap:10px;">
+                <span class="leg" style="gap:10px;">
+                  <span class="leg-swatch" style="background:#2d8a22;width:14px;height:14px;border-radius:3px;"></span>
+                  <span><strong>Milk sales</strong><br><span style="font-size:11px;color:var(--text-muted);">Ksh 80/L × litres/day × 30 × lactating does</span></span>
+                </span>
+                <span class="leg" style="gap:10px;">
+                  <span class="leg-swatch" style="background:#9FE1CB;width:14px;height:14px;border-radius:3px;"></span>
+                  <span><strong>Manure</strong><br><span style="font-size:11px;color:var(--text-muted);">Per goat per 2-week cycle × Ksh 150/bag</span></span>
+                </span>
+                <span class="leg" style="gap:10px;">
+                  <span class="leg-swatch" style="background:#EF9F27;width:14px;height:14px;border-radius:3px;"></span>
+                  <span><strong>Animal sales</strong><br><span style="font-size:11px;color:var(--text-muted);">Male kids at 5 mo + optional doe sales</span></span>
+                </span>
+              </div>
+            </div>
+            <div style="background:var(--surface-2);border-radius:var(--r-md);padding:12px 14px;">
+              <p style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
+                With the group male buck asset enabled, does cycle through lactation and pregnancy continuously — compounding the herd and income streams over time. Female kids retained become future producers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel: Table ── -->
+    <div id="panel-table" class="panel">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">Month-by-month breakdown</div>
+            <div class="chart-card-sub">Current month highlighted in green. Break-even row highlighted in amber.</div>
+          </div>
+        </div>
+        <div class="herd-table-wrap">
+          <table class="herd-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Herd</th>
+                <th>Does</th>
+                <th>Lact.</th>
+                <th>Milk (Ksh)</th>
+                <th>Manure</th>
+                <th>Sales</th>
+                <th>Costs</th>
+                <th>Net / mo</th>
+                <th>Cum. net</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Footer ── -->
+    <div style="margin-top:2rem;padding:1rem 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;color:var(--text-muted);">MbuziPlus Simulator V.1 — For educational and planning purposes. Actual results vary by management and market conditions.</span>
+      <span style="font-size:11px;color:var(--text-muted);">Milk price: Ksh 80/L · Gestation: 5 mo · Lactation: 5 mo · Dry: 2 mo</span>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<!-- App JS -->
+<script src="mbuziplus.js"></script>
+</body>
+</html>
