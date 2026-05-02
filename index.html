@@ -1,310 +1,1075 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MbuziPlus Simulator V.1 — Dairy Goat ROI</title>
-  <link rel="stylesheet" href="mbuziplus.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MbuziPlus — Your Goat Farm Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --cream:#fdf8f0;
+  --cream2:#f7f0e4;
+  --cream3:#ede4d4;
+  --terra:#c4622d;
+  --terra2:#e07a45;
+  --terra-light:#faeade;
+  --forest:#2d5a3d;
+  --forest2:#3d7a54;
+  --forest-light:#e8f2ec;
+  --amber:#d4922a;
+  --amber-light:#fef3db;
+  --text:#2c2417;
+  --text2:#6b5a42;
+  --text3:#9c8a72;
+  --border:#e0d4c0;
+  --white:#ffffff;
+  --r:20px;
+  --r-sm:12px;
+}
+
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+body{
+  background:var(--cream);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+}
+
+/* ── HEADER ── */
+.header{
+  background:var(--forest);
+  padding:1.5rem 2rem;
+  display:flex;align-items:center;gap:14px;
+}
+.header-icon{font-size:28px;line-height:1}
+.header h1{
+  font-family:'Lora',serif;
+  font-size:22px;font-weight:600;
+  color:#fff;letter-spacing:-0.01em;
+}
+.header p{font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px}
+.header-badge{
+  margin-left:auto;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px;padding:4px 14px;
+  font-size:11px;color:rgba(255,255,255,0.7);
+  font-weight:500;letter-spacing:0.05em;
+}
+
+/* ── PAGE ── */
+.page{max-width:760px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+/* ── STEP LABELS ── */
+.step-label{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:500;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--text3);
+  margin-bottom:10px;
+}
+.step-num{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--cream3);color:var(--text2);
+  font-size:10px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── SECTION ── */
+.section{margin-bottom:2.5rem}
+.section-title{
+  font-family:'Lora',serif;
+  font-size:20px;font-weight:600;
+  color:var(--text);margin-bottom:6px;
+}
+.section-desc{font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:1.25rem}
+
+/* ── INVESTMENT CARD ── */
+.inv-card{
+  background:var(--forest);
+  border-radius:var(--r);
+  padding:1.5rem;
+  color:#fff;
+  position:relative;overflow:hidden;
+}
+.inv-card::before{
+  content:'🐐';
+  position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);
+  font-size:72px;opacity:0.08;line-height:1;
+}
+.inv-total-label{font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px}
+.inv-total-value{font-family:'Lora',serif;font-size:40px;font-weight:600;color:#fff;line-height:1}
+.inv-breakdown{display:flex;gap:0;margin-top:1.25rem;border-top:1px solid rgba(255,255,255,0.15);padding-top:1rem}
+.inv-item{flex:1;padding-right:1rem}
+.inv-item+.inv-item{border-left:1px solid rgba(255,255,255,0.15);padding-left:1rem;padding-right:0}
+.inv-item-label{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:3px}
+.inv-item-val{font-size:16px;font-weight:500;color:#fff}
+.inv-item-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px}
+
+/* ── GOAT CARDS ── */
+.goat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.goat-grid{grid-template-columns:1fr}}
+
+.goat-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  padding:1.25rem;
+  transition:border-color 0.2s;
+}
+.goat-card:hover{border-color:var(--terra2)}
+.goat-card-top{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.goat-emoji{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--forest-light);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.goat-name{font-family:'Lora',serif;font-size:16px;font-weight:600;color:var(--text)}
+.goat-role{font-size:11px;color:var(--text3)}
+
+.field-label{
+  font-size:11px;font-weight:500;text-transform:uppercase;
+  letter-spacing:0.07em;color:var(--text3);margin-bottom:5px;margin-top:10px;
+}
+.field-label:first-of-type{margin-top:0}
+
+select,input[type=number]{
+  width:100%;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  padding:9px 12px;
+  border:1.5px solid var(--border);
+  border-radius:var(--r-sm);
+  background:var(--cream);
+  color:var(--text);
+  appearance:none;-webkit-appearance:none;
+  transition:border-color 0.15s,box-shadow 0.15s;
+  cursor:pointer;
+}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239c8a72' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+select:focus,input[type=number]:focus{outline:none;border-color:var(--forest2);box-shadow:0 0 0 3px rgba(45,90,61,0.1)}
+
+.lact-toggle{display:flex;gap:6px;margin-top:0}
+.lact-opt{
+  flex:1;padding:8px 6px;
+  border:1.5px solid var(--border);
+  border-radius:var(--r-sm);
+  background:var(--cream);
+  font-size:12px;font-weight:500;
+  color:var(--text2);cursor:pointer;
+  text-align:center;transition:all 0.15s;
+}
+.lact-opt.active{
+  background:var(--forest-light);
+  border-color:var(--forest2);
+  color:var(--forest);
+}
+.milk-hint{
+  font-size:11px;color:var(--text3);
+  background:var(--cream2);
+  border-radius:8px;padding:6px 10px;
+  margin-top:8px;line-height:1.5;
+}
+
+/* ── SLIDERS ── */
+.slider-section{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  padding:1.25rem;
+}
+.slider-row{padding:10px 0;border-bottom:1px solid var(--border)}
+.slider-row:last-child{border-bottom:none;padding-bottom:0}
+.slider-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.slider-name{font-size:14px;font-weight:500;color:var(--text)}
+.slider-value{
+  font-family:'Lora',serif;font-size:18px;
+  color:var(--forest);font-weight:600;
+}
+.slider-hint{font-size:11px;color:var(--text3);margin-top:2px}
+
+input[type=range]{
+  width:100%;height:5px;
+  -webkit-appearance:none;appearance:none;
+  background:var(--cream3);border-radius:3px;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--forest);border:3px solid #fff;
+  box-shadow:0 1px 5px rgba(0,0,0,0.2);
+  cursor:pointer;transition:transform 0.1s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+
+/* ── TIMELINE ── */
+.timeline-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;
+}
+.timeline-top{
+  padding:1.25rem 1.25rem 1rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;
+}
+.timeline-month-big{
+  font-family:'Lora',serif;font-size:32px;font-weight:600;color:var(--text);
+  line-height:1;
+}
+.timeline-month-sub{font-size:12px;color:var(--text3);margin-top:3px}
+
+.play-row{display:flex;align-items:center;gap:10px;padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
+.play-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--terra);border:none;
+  color:#fff;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background 0.15s,transform 0.1s;
+}
+.play-btn:hover{background:var(--terra2);transform:scale(1.05)}
+.play-btn:active{transform:scale(0.97)}
+.timeline-slider-wrap{flex:1;position:relative}
+.tick-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:5px;padding:0 1px}
+
+/* ── STORY BOX ── */
+.story-box{
+  margin:0 1.25rem 1rem;
+  padding:14px 16px;
+  border-radius:var(--r-sm);
+  background:var(--cream2);
+  border-left:3px solid var(--terra);
+  display:flex;gap:12px;align-items:flex-start;
+  min-height:64px;
+  transition:background 0.3s;
+}
+.story-icon{font-size:22px;line-height:1.2;flex-shrink:0}
+.story-text .story-headline{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
+.story-text .story-body{font-size:12px;color:var(--text2);line-height:1.6}
+
+/* ── MONTH STATS ── */
+.month-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:0;border-top:1px solid var(--border);
+}
+@media(max-width:520px){.month-stats{grid-template-columns:repeat(2,1fr)}}
+.stat{
+  padding:1rem;text-align:center;
+  border-right:1px solid var(--border);
+}
+.stat:last-child{border-right:none}
+.stat-icon{font-size:18px;margin-bottom:4px}
+.stat-val{font-family:'Lora',serif;font-size:20px;font-weight:600;color:var(--text);line-height:1}
+.stat-label{font-size:10px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:0.05em}
+
+/* ── MILESTONE PILLS ── */
+.milestones{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:20px;
+  font-size:11px;font-weight:500;
+  border:1.5px solid var(--border);
+  background:var(--white);color:var(--text3);
+  transition:all 0.3s;
+}
+.pill.done{background:var(--forest-light);border-color:var(--forest2);color:var(--forest)}
+.pill.now{background:var(--amber-light);border-color:var(--amber);color:var(--amber);font-weight:600}
+.pill-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* ── CHART CARD ── */
+.chart-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  padding:1.25rem;
+}
+.chart-title{font-family:'Lora',serif;font-size:16px;font-weight:600;margin-bottom:4px}
+.chart-sub{font-size:12px;color:var(--text3);margin-bottom:1rem;line-height:1.5}
+.chart-legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── OUTCOME ── */
+.outcome-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:520px){.outcome-grid{grid-template-columns:1fr}}
+.outcome-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  padding:1.25rem;
+  text-align:center;
+}
+.outcome-card.featured{
+  background:var(--forest);
+  border-color:var(--forest);
+}
+.oc-icon{font-size:28px;margin-bottom:8px}
+.oc-val{font-family:'Lora',serif;font-size:28px;font-weight:600;color:var(--text);line-height:1}
+.outcome-card.featured .oc-val{color:#fff}
+.oc-label{font-size:11px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em}
+.outcome-card.featured .oc-label{color:rgba(255,255,255,0.6)}
+.oc-sub{font-size:12px;color:var(--text2);margin-top:6px;line-height:1.4}
+.outcome-card.featured .oc-sub{color:rgba(255,255,255,0.7)}
+
+/* ── DIVIDER ── */
+.divider{display:flex;align-items:center;gap:12px;margin:2rem 0}
+.divider::before,.divider::after{content:'';flex:1;border-top:1px solid var(--border)}
+.divider span{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{background:var(--cream3);border-radius:4px;height:8px;overflow:hidden;margin-top:6px}
+.progress-bar{height:100%;border-radius:4px;background:var(--forest2);transition:width 0.5s cubic-bezier(.4,0,.2,1)}
+.progress-bar.over{background:var(--terra)}
+
+/* ── FOOTER ── */
+.footer{
+  text-align:center;padding:1.5rem;
+  font-size:11px;color:var(--text3);
+  border-top:1px solid var(--border);
+  line-height:1.8;
+}
+.footer strong{color:var(--text2)}
+</style>
 </head>
 <body>
 
-<!-- ─── HEADER ─────────────────────────────────────────────────────────────── -->
-<header class="app-header">
-  <div class="logo-block">
-    <div class="logo-icon">🐐</div>
-    <div class="logo-text">
-      <h1>MbuziPlus</h1>
-      <span>Dairy Goat ROI Simulator</span>
-    </div>
+<header class="header">
+  <div class="header-icon">🐐</div>
+  <div>
+    <h1>MbuziPlus</h1>
+    <p>Your dairy goat farm journey</p>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span class="header-badge">V.1</span>
-    <span style="font-size:12px;color:var(--green-300);">Total investment: <strong style="color:#fff;">Ksh 60,000</strong></span>
-  </div>
+  <span class="header-badge">Simulator V.2</span>
 </header>
 
-<!-- ─── APP BODY ────────────────────────────────────────────────────────────── -->
-<div class="app-body">
+<div class="page">
 
-  <!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════════ -->
-  <aside class="sidebar">
+  <!-- ════════ STEP 1: THE INVESTMENT ════════ -->
+  <div class="section">
+    <div class="step-label"><span class="step-num">1</span> What you invest</div>
+    <div class="section-title">Your Ksh 60,000 goes a long way</div>
+    <p class="section-desc">This covers everything to get you started — registration, two healthy does, feed, insurance, vet care, and logistics to your farm.</p>
 
-    <!-- Investment breakdown -->
-    <div class="sidebar-section">
-      <div class="section-title">Investment breakdown</div>
-      <div class="inv-row"><span class="inv-label">Registration fee</span><span class="inv-val">Ksh 6,000</span></div>
-      <div class="inv-row"><span class="inv-label">Goats × 2</span><span class="inv-val">incl.</span></div>
-      <div class="inv-row"><span class="inv-label">Feed concentrate</span><span class="inv-val">incl.</span></div>
-      <div class="inv-row"><span class="inv-label">Insurance (Imfuyo SP)</span><span class="inv-val">incl.</span></div>
-      <div class="inv-row"><span class="inv-label">Vet care + logistics</span><span class="inv-val">incl.</span></div>
-      <div class="inv-total">
-        <span class="inv-label">Total investment</span>
-        <span class="inv-val">60,000</span>
-      </div>
-    </div>
-
-    <!-- Your goats -->
-    <div class="sidebar-section">
-      <div class="section-title">Your goats</div>
-      <div id="goat-list"></div>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="addGoat('doe')">+ Add doe</button>
-        <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="addGoat('buck')">+ Add buck</button>
-      </div>
-    </div>
-
-    <!-- Program toggles -->
-    <div class="sidebar-section">
-      <div class="section-title">Program options</div>
-
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <span class="toggle-label">Group male goat (buck)</span>
-          <span class="toggle-desc">Shared program asset — enables breeding &amp; herd growth</span>
+    <div class="inv-card">
+      <div class="inv-total-label">Total investment</div>
+      <div class="inv-total-value">Ksh 60,000</div>
+      <div class="inv-breakdown">
+        <div class="inv-item">
+          <div class="inv-item-label">Registration</div>
+          <div class="inv-item-val">Ksh 6,000</div>
+          <div class="inv-item-sub">One-time fee</div>
         </div>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-male">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <div id="male-arrive-row" style="display:none;align-items:center;justify-content:space-between;padding:8px 0 4px;">
-        <span style="font-size:12px;color:var(--text-secondary);">Male arrives at month</span>
-        <input type="number" id="male-arrive-month" min="1" max="6" value="2" style="width:60px;font-size:13px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--r-sm);text-align:center;">
-      </div>
-
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <span class="toggle-label">Auto-sell male kids</span>
-          <span class="toggle-desc">Sell male offspring at 5 months (Ksh set below)</span>
+        <div class="inv-item">
+          <div class="inv-item-label">Goats + program</div>
+          <div class="inv-item-val">Ksh 54,000</div>
+          <div class="inv-item-sub">Goats · Feed · Imfuyo SP insurance · Vet · Logistics</div>
         </div>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-autosell" checked>
-          <span class="toggle-slider"></span>
-        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><span>Tell us about your goats</span></div>
+
+  <!-- ════════ STEP 2: THE GOATS ════════ -->
+  <div class="section">
+    <div class="step-label"><span class="step-num">2</span> Your two does</div>
+    <div class="section-title">Every goat is different</div>
+    <p class="section-desc">Choose a breed and tell us if she's already producing milk. This changes when your income starts.</p>
+
+    <div class="goat-grid">
+      <!-- Doe 1 -->
+      <div class="goat-card">
+        <div class="goat-card-top">
+          <div class="goat-emoji">🐐</div>
+          <div><div class="goat-name">Doe One</div><div class="goat-role">Your first dairy doe</div></div>
+        </div>
+        <div class="field-label">Breed</div>
+        <select id="breed1" onchange="onGoatChange()">
+          <option value="Crossbreed">Crossbreed (1.2–2.5 L/day)</option>
+          <option value="Toggenburg">Toggenburg (1.5–3.0 L/day)</option>
+          <option value="Alpine">Alpine (2.0–3.5 L/day)</option>
+          <option value="Saanen">Saanen (2.5–4.5 L/day) ★ top milk</option>
+          <option value="Galla">Galla (0.5–1.5 L/day)</option>
+          <option value="EastAfrican">East African (0.3–1.0 L/day)</option>
+        </select>
+        <div class="field-label" style="margin-top:12px">When you buy her, is she...</div>
+        <div class="lact-toggle">
+          <div class="lact-opt active" id="lact1-yes" onclick="setLact(1,true)">Already milking</div>
+          <div class="lact-opt" id="lact1-no" onclick="setLact(1,false)">Not yet milking</div>
+        </div>
+        <div class="milk-hint" id="hint1">She starts producing milk right away. Income from Month 1.</div>
+      </div>
+
+      <!-- Doe 2 -->
+      <div class="goat-card">
+        <div class="goat-card-top">
+          <div class="goat-emoji">🐐</div>
+          <div><div class="goat-name">Doe Two</div><div class="goat-role">Your second dairy doe</div></div>
+        </div>
+        <div class="field-label">Breed</div>
+        <select id="breed2" onchange="onGoatChange()">
+          <option value="Crossbreed">Crossbreed (1.2–2.5 L/day)</option>
+          <option value="Toggenburg">Toggenburg (1.5–3.0 L/day)</option>
+          <option value="Alpine">Alpine (2.0–3.5 L/day)</option>
+          <option value="Saanen">Saanen (2.5–4.5 L/day) ★ top milk</option>
+          <option value="Galla">Galla (0.5–1.5 L/day)</option>
+          <option value="EastAfrican">East African (0.3–1.0 L/day)</option>
+        </select>
+        <div class="field-label" style="margin-top:12px">When you buy her, is she...</div>
+        <div class="lact-toggle">
+          <div class="lact-opt active" id="lact2-yes" onclick="setLact(2,true)">Already milking</div>
+          <div class="lact-opt" id="lact2-no" onclick="setLact(2,false)">Not yet milking</div>
+        </div>
+        <div class="milk-hint" id="hint2">She starts producing milk right away. Income from Month 1.</div>
       </div>
     </div>
 
-    <!-- Market settings -->
-    <div class="sidebar-section">
-      <div class="section-title">Market &amp; cost assumptions</div>
-      <div id="settings-area"></div>
+    <!-- Group male toggle -->
+    <div style="margin-top:14px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--text)">Group male buck (shared program asset)</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:3px">Arrives Month 2. Enables breeding → more kids → growing herd.</div>
+      </div>
+      <label style="position:relative;width:46px;height:26px;flex-shrink:0;cursor:pointer;">
+        <input type="checkbox" id="toggle-male" checked onchange="onGoatChange()" style="opacity:0;width:0;height:0;position:absolute">
+        <span id="toggle-track" style="position:absolute;inset:0;background:var(--forest2);border-radius:13px;transition:background 0.2s;"></span>
+        <span id="toggle-thumb" style="position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:23px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);"></span>
+      </label>
     </div>
+  </div>
 
-    <!-- Legend -->
-    <div class="sidebar-section">
-      <div class="section-title">Breed milk reference</div>
-      <table style="width:100%;font-size:11px;border-collapse:collapse;">
-        <thead>
-          <tr>
-            <th style="text-align:left;padding:4px 0;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);">Breed</th>
-            <th style="text-align:right;padding:4px 0;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);">Litres/day</th>
-            <th style="text-align:right;padding:4px 0;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);">1st lact</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td style="padding:4px 0;">Saanen</td><td style="text-align:right;color:var(--green-700);">2.5–4.5 L</td><td style="text-align:right;">10 mo</td></tr>
-          <tr><td style="padding:4px 0;">Alpine</td><td style="text-align:right;color:var(--green-700);">2.0–3.5 L</td><td style="text-align:right;">12 mo</td></tr>
-          <tr><td style="padding:4px 0;">Toggenburg</td><td style="text-align:right;color:var(--green-700);">1.5–3.0 L</td><td style="text-align:right;">12 mo</td></tr>
-          <tr><td style="padding:4px 0;">Crossbreed</td><td style="text-align:right;">1.2–2.5 L</td><td style="text-align:right;">12 mo</td></tr>
-          <tr><td style="padding:4px 0;">Galla</td><td style="text-align:right;">0.5–1.5 L</td><td style="text-align:right;">14 mo</td></tr>
-          <tr><td style="padding:4px 0;">East African</td><td style="text-align:right;">0.3–1.0 L</td><td style="text-align:right;">15 mo</td></tr>
-          <tr><td style="padding:4px 0;">Boer</td><td style="text-align:right;color:var(--text-muted);">0.5–1.0 L</td><td style="text-align:right;">14 mo</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:10px;color:var(--text-muted);margin-top:8px;">Lactation: 5 mo active + 2 mo dry. Gestation: 5 mo. Kids/birth: 1–2 avg.</p>
-    </div>
+  <div class="divider"><span>Two things that matter most</span></div>
 
-  </aside>
+  <!-- ════════ STEP 3: KEY ASSUMPTIONS ════════ -->
+  <div class="section">
+    <div class="step-label"><span class="step-num">3</span> Market conditions</div>
+    <div class="section-title">Adjust to your local market</div>
+    <p class="section-desc">These two numbers have the biggest impact on your returns. Set them to what you know locally.</p>
 
-  <!-- ═══ MAIN CONTENT ═══════════════════════════════════════════════════════ -->
-  <main class="main">
-
-    <!-- ── Summary metrics ── -->
-    <div class="metrics-grid">
-      <div class="metric-card highlight">
-        <div class="metric-label">Break-even month</div>
-        <div class="metric-value amber" id="m-breakeven">—</div>
-        <div class="metric-sub">After Ksh 60,000 recovered</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Net profit (end of sim)</div>
-        <div class="metric-value green" id="m-net-profit">—</div>
-        <div class="metric-sub">After all costs deducted</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Herd size (end)</div>
-        <div class="metric-value blue" id="m-herd">—</div>
-        <div class="metric-sub">Total animals alive</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Income this month</div>
-        <div class="metric-value" id="m-monthly-income">—</div>
-        <div class="metric-sub">Gross (milk + manure + sales)</div>
-      </div>
-    </div>
-
-    <!-- ── Timeline scrubber ── -->
-    <div class="timeline-bar">
-      <div class="timeline-header">
-        <span class="timeline-title">Timeline scrubber</span>
-        <span class="timeline-month-display" id="current-month-display">Month 36</span>
-      </div>
-      <div class="timeline-controls">
-        <button class="play-btn" onclick="togglePlay()" title="Play / Pause">
-          <span id="play-btn-icon">▶</span>
-        </button>
-        <input type="range" id="timeline-slider" min="1" max="36" value="36" step="1">
-      </div>
-      <div class="month-ticks">
-        <span>M1</span><span>M6</span><span>M12</span><span>M18</span><span>M24</span><span>M30</span><span>M36</span>
-      </div>
-    </div>
-
-    <!-- ── Milestone strip ── -->
-    <div id="milestone-strip" class="milestone-strip"></div>
-
-    <!-- ── Snapshot for current month ── -->
-    <div id="snapshot-strip" class="snapshot-strip"></div>
-
-    <!-- ── Tabs ── -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="overview">Income vs investment</button>
-      <button class="tab-btn" data-tab="herd">Herd growth</button>
-      <button class="tab-btn" data-tab="breakdown">Income mix</button>
-      <button class="tab-btn" data-tab="table">Month-by-month</button>
-    </div>
-
-    <!-- ── Panel: Overview ── -->
-    <div id="panel-overview" class="panel active">
-      <div class="chart-card">
-        <div class="chart-card-header">
+    <div class="slider-section">
+      <div class="slider-row">
+        <div class="slider-top">
           <div>
-            <div class="chart-card-title">Monthly income streams vs costs — cumulative net</div>
-            <div class="chart-card-sub">Bars = monthly income by source. Green line = cumulative net. Red dashed = Ksh 60,000 investment.</div>
+            <div class="slider-name">Milk price</div>
+            <div class="slider-hint">What you sell one litre for</div>
           </div>
+          <div class="slider-value">Ksh <span id="milk-val">80</span>/L</div>
         </div>
-        <div class="legend">
-          <span class="leg"><span class="leg-swatch" style="background:#2d8a22;"></span>Milk income</span>
-          <span class="leg"><span class="leg-swatch" style="background:#9FE1CB;"></span>Manure income</span>
-          <span class="leg"><span class="leg-swatch" style="background:#EF9F27;"></span>Animal sales</span>
-          <span class="leg"><span class="leg-swatch" style="background:#b83232;"></span>Feed costs (negative)</span>
-          <span class="leg"><span class="leg-swatch" style="background:#1a4f14; width:20px; height:3px; border-radius:1px; margin-top:4px;"></span>Cumulative net</span>
-          <span class="leg"><span class="leg-swatch" style="background:#b83232; width:20px; height:3px; border-radius:1px; margin-top:4px; border-top:1px dashed #b83232; background:transparent;"></span>Investment line</span>
-        </div>
-        <div class="chart-wrap" style="height:320px;">
-          <canvas id="chart-growth" role="img" aria-label="Stacked bar chart showing monthly milk, manure, and animal sale income over time, with feed costs negative, and cumulative net income as a line versus the investment reference line of Ksh 60000.">Monthly income vs investment line over simulation period.</canvas>
-        </div>
+        <input type="range" id="milk-price" min="40" max="150" step="5" value="80" oninput="document.getElementById('milk-val').textContent=this.value;runSim()">
       </div>
-    </div>
-
-    <!-- ── Panel: Herd ── -->
-    <div id="panel-herd" class="panel">
-      <div class="chart-card">
-        <div class="chart-card-header">
+      <div class="slider-row">
+        <div class="slider-top">
           <div>
-            <div class="chart-card-title">Herd growth over time</div>
-            <div class="chart-card-sub">Total animals, does, lactating, and pregnant — step changes show births and sales.</div>
+            <div class="slider-name">Monthly feed & care cost</div>
+            <div class="slider-hint">Per goat — feed, water, basic vet</div>
           </div>
+          <div class="slider-value">Ksh <span id="feed-val">1,500</span></div>
         </div>
-        <div class="legend">
-          <span class="leg"><span class="leg-swatch" style="background:#1a6abf;"></span>Total herd</span>
-          <span class="leg"><span class="leg-swatch" style="background:#2d8a22;"></span>Does (active)</span>
-          <span class="leg"><span class="leg-swatch" style="background:#f5a623;"></span>Lactating</span>
-          <span class="leg"><span class="leg-swatch" style="background:#9F77DD;"></span>Pregnant</span>
-        </div>
-        <div class="chart-wrap" style="height:320px;">
-          <canvas id="chart-herd" role="img" aria-label="Line chart showing total herd size, does, lactating, and pregnant animals over the simulation months. Step changes represent births and animal sales.">Herd growth including does, lactating, and pregnant animals over time.</canvas>
-        </div>
+        <input type="range" id="feed-cost" min="500" max="3500" step="100" value="1500" oninput="document.getElementById('feed-val').textContent=Number(this.value).toLocaleString();runSim()">
       </div>
-    </div>
-
-    <!-- ── Panel: Income breakdown ── -->
-    <div id="panel-breakdown" class="panel">
-      <div class="chart-card">
-        <div class="chart-card-header">
+      <div class="slider-row">
+        <div class="slider-top">
           <div>
-            <div class="chart-card-title">Total income mix (full simulation)</div>
-            <div class="chart-card-sub">Proportional contribution of each income stream over the entire period.</div>
+            <div class="slider-name">Kid sale price</div>
+            <div class="slider-hint">Selling a goat at ~5 months old</div>
           </div>
+          <div class="slider-value">Ksh <span id="kid-val">20,000</span></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:center;">
-          <div class="chart-wrap" style="height:260px;">
-            <canvas id="chart-breakdown" role="img" aria-label="Doughnut chart showing proportion of total income from milk, manure sales, and animal sales over the full simulation period.">Income mix: milk, manure, and animal sales proportions.</canvas>
-          </div>
-          <div id="breakdown-detail">
-            <div style="margin-bottom:1rem;">
-              <div class="legend" style="flex-direction:column;gap:10px;">
-                <span class="leg" style="gap:10px;">
-                  <span class="leg-swatch" style="background:#2d8a22;width:14px;height:14px;border-radius:3px;"></span>
-                  <span><strong>Milk sales</strong><br><span style="font-size:11px;color:var(--text-muted);">Ksh 80/L × litres/day × 30 × lactating does</span></span>
-                </span>
-                <span class="leg" style="gap:10px;">
-                  <span class="leg-swatch" style="background:#9FE1CB;width:14px;height:14px;border-radius:3px;"></span>
-                  <span><strong>Manure</strong><br><span style="font-size:11px;color:var(--text-muted);">Per goat per 2-week cycle × Ksh 150/bag</span></span>
-                </span>
-                <span class="leg" style="gap:10px;">
-                  <span class="leg-swatch" style="background:#EF9F27;width:14px;height:14px;border-radius:3px;"></span>
-                  <span><strong>Animal sales</strong><br><span style="font-size:11px;color:var(--text-muted);">Male kids at 5 mo + optional doe sales</span></span>
-                </span>
-              </div>
-            </div>
-            <div style="background:var(--surface-2);border-radius:var(--r-md);padding:12px 14px;">
-              <p style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
-                With the group male buck asset enabled, does cycle through lactation and pregnancy continuously — compounding the herd and income streams over time. Female kids retained become future producers.
-              </p>
-            </div>
+        <input type="range" id="kid-price" min="8000" max="40000" step="1000" value="20000" oninput="document.getElementById('kid-val').textContent=Number(this.value).toLocaleString();runSim()">
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><span>Watch your farm grow</span></div>
+
+  <!-- ════════ STEP 4: THE JOURNEY ════════ -->
+  <div class="section">
+    <div class="step-label"><span class="step-num">4</span> The journey</div>
+    <div class="section-title">Month by month, your farm grows</div>
+    <p class="section-desc">Press play or drag the slider to move through time. Watch what changes at each milestone.</p>
+
+    <!-- Milestone pills -->
+    <div class="milestones" id="milestone-pills"></div>
+
+    <!-- Timeline card -->
+    <div class="timeline-card">
+      <div class="timeline-top">
+        <div>
+          <div class="timeline-month-big" id="month-big">Month 1</div>
+          <div class="timeline-month-sub" id="month-sub">Your journey begins</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--text3)">Recovery progress</div>
+          <div style="font-size:18px;font-weight:600;font-family:'Lora',serif;color:var(--forest)" id="recovery-pct">0%</div>
+          <div class="progress-wrap" style="width:140px">
+            <div class="progress-bar" id="recovery-bar" style="width:0%"></div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ── Panel: Table ── -->
-    <div id="panel-table" class="panel">
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div>
-            <div class="chart-card-title">Month-by-month breakdown</div>
-            <div class="chart-card-sub">Current month highlighted in green. Break-even row highlighted in amber.</div>
-          </div>
+      <div class="play-row">
+        <button class="play-btn" id="play-btn" onclick="togglePlay()">▶</button>
+        <div class="timeline-slider-wrap">
+          <input type="range" id="timeline" min="1" max="36" value="1" step="1" oninput="setMonth(+this.value)">
+          <div class="tick-row" id="tick-row"></div>
         </div>
-        <div class="herd-table-wrap">
-          <table class="herd-table">
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th>Herd</th>
-                <th>Does</th>
-                <th>Lact.</th>
-                <th>Milk (Ksh)</th>
-                <th>Manure</th>
-                <th>Sales</th>
-                <th>Costs</th>
-                <th>Net / mo</th>
-                <th>Cum. net</th>
-              </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-          </table>
+      </div>
+
+      <div class="story-box" id="story-box">
+        <div class="story-icon" id="story-icon">🌱</div>
+        <div class="story-text">
+          <div class="story-headline" id="story-headline">Your goats arrive</div>
+          <div class="story-body" id="story-body">Two healthy does are delivered to your farm. Manure production starts immediately — your first income stream is already flowing.</div>
+        </div>
+      </div>
+
+      <div class="month-stats">
+        <div class="stat">
+          <div class="stat-icon">🐐</div>
+          <div class="stat-val" id="s-herd">2</div>
+          <div class="stat-label">Animals</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon">🥛</div>
+          <div class="stat-val" id="s-milk">—</div>
+          <div class="stat-label">Milk / mo</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon">🌿</div>
+          <div class="stat-val" id="s-manure">—</div>
+          <div class="stat-label">Manure / mo</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon">📈</div>
+          <div class="stat-val" id="s-net">—</div>
+          <div class="stat-label">Net this month</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- ── Footer ── -->
-    <div style="margin-top:2rem;padding:1rem 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:11px;color:var(--text-muted);">MbuziPlus Simulator V.1 — For educational and planning purposes. Actual results vary by management and market conditions.</span>
-      <span style="font-size:11px;color:var(--text-muted);">Milk price: Ksh 80/L · Gestation: 5 mo · Lactation: 5 mo · Dry: 2 mo</span>
+  <div class="divider"><span>Your results</span></div>
+
+  <!-- ════════ STEP 5: THE OUTCOME ════════ -->
+  <div class="section">
+    <div class="step-label"><span class="step-num">5</span> Your outcome</div>
+    <div class="section-title">Where you end up</div>
+    <p class="section-desc">Based on your goats and market settings, here's what 36 months looks like.</p>
+
+    <div class="outcome-grid" style="margin-bottom:1.25rem">
+      <div class="outcome-card">
+        <div class="oc-icon">⏱️</div>
+        <div class="oc-val" id="oc-breakeven">—</div>
+        <div class="oc-label">Break-even month</div>
+        <div class="oc-sub" id="oc-be-sub">The month your income fully covers your Ksh 60,000 investment</div>
+      </div>
+      <div class="outcome-card featured">
+        <div class="oc-icon">💰</div>
+        <div class="oc-val" id="oc-profit">—</div>
+        <div class="oc-label">Net profit at 36 months</div>
+        <div class="oc-sub">After all feed, care, and investment costs</div>
+      </div>
+      <div class="outcome-card">
+        <div class="oc-icon">🐐</div>
+        <div class="oc-val" id="oc-herd">—</div>
+        <div class="oc-label">Herd size at 36 months</div>
+        <div class="oc-sub">Animals you own — each one a growing asset</div>
+      </div>
     </div>
 
-  </main>
+    <!-- Growth chart -->
+    <div class="chart-card">
+      <div class="chart-title">Cumulative income vs your Ksh 60,000 investment</div>
+      <div class="chart-sub">The green area is total income built up over time. When it crosses the red line — that's break-even. Everything above is pure profit.</div>
+      <div class="chart-legend">
+        <span class="leg"><span class="leg-sq" style="background:#3d7a54"></span>Cumulative income (milk + manure + sales)</span>
+        <span class="leg"><span class="leg-sq" style="background:#c4622d"></span>Investment Ksh 60,000</span>
+        <span class="leg"><span class="leg-sq" style="background:#d4922a"></span>Monthly feed costs</span>
+      </div>
+      <div style="position:relative;height:260px">
+        <canvas id="main-chart" role="img" aria-label="Line chart showing cumulative farm income rising over 36 months versus a flat Ksh 60,000 investment reference line. The point where income crosses the investment line marks break-even.">Cumulative income vs Ksh 60,000 investment over 36 months.</canvas>
+      </div>
+    </div>
+
+    <!-- Herd growth chart -->
+    <div class="chart-card" style="margin-top:12px">
+      <div class="chart-title">Your herd grows over time</div>
+      <div class="chart-sub">With the group male buck and female kids retained, your herd compounds. Each new doe is a future income stream.</div>
+      <div class="chart-legend">
+        <span class="leg"><span class="leg-sq" style="background:#2d5a3d"></span>Total animals</span>
+        <span class="leg"><span class="leg-sq" style="background:#3d7a54"></span>Milking does</span>
+      </div>
+      <div style="position:relative;height:180px">
+        <canvas id="herd-chart" role="img" aria-label="Step line chart showing total herd size and milking does growing over 36 months as new kids are born and retained.">Herd growth: total animals and milking does over 36 months.</canvas>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- Toast notification -->
-<div class="toast" id="toast"></div>
+<footer class="footer">
+  <strong>MbuziPlus Simulator V.2</strong> · For planning and education purposes only<br>
+  Milk Ksh 80/L · Manure Ksh 150/40kg bag · Gestation 5 months · Lactation 5 months active · 2 months dry
+</footer>
 
-<!-- Chart.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<!-- App JS -->
-<script src="mbuziplus.js"></script>
+<script>
+// ─── BREED DATA ───────────────────────────────────────────────────────────────
+const BREEDS = {
+  Crossbreed:  { milk: 1.85, lact: 12 },
+  Toggenburg:  { milk: 2.25, lact: 12 },
+  Alpine:      { milk: 2.75, lact: 12 },
+  Saanen:      { milk: 3.50, lact: 10 },
+  Galla:       { milk: 1.00, lact: 14 },
+  EastAfrican: { milk: 0.65, lact: 15 },
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const S = {
+  breed1: 'Crossbreed', lact1: true,
+  breed2: 'Crossbreed', lact2: true,
+  maleAsset: true,
+  milkPrice: 80,
+  feedCost: 1500,
+  kidPrice: 20000,
+  simMonths: 36,
+  currentMonth: 1,
+  playing: false,
+  playTimer: null,
+  simData: [],
+  breakEvenMonth: null,
+  charts: {},
+};
+
+// ─── STORY EVENTS (per month triggers) ───────────────────────────────────────
+function getStory(m, row, prev) {
+  if (!row) return { icon:'🌱', headline:'Your goats arrive', body:'Two healthy does are delivered. Manure income starts immediately — your first income stream is already flowing.' };
+
+  const events = [];
+
+  if (m === 1) events.push({ icon:'🌱', headline:'Your goats arrive', body:'Two healthy does are delivered. Manure income starts immediately — your first Ksh come in.' });
+  if (S.maleAsset && m === 2) events.push({ icon:'🐑', headline:'The group buck arrives', body:'Your shared male goat joins the farm. Within weeks, your does can be bred — starting the cycle of new life and growing assets.' });
+  if (row.milkIncome > 0 && (!prev || prev.milkIncome === 0)) events.push({ icon:'🥛', headline:'First milk flows!', body:`Your does start producing. At Ksh ${S.milkPrice}/litre, that's Ksh ${fmt(row.milkIncome)} flowing in this month alone.` });
+  if (row.animalSales > 0 && (!prev || prev.animalSales === 0)) events.push({ icon:'🐣', headline:'First kids sold', body:`Your first offspring reach 5 months old and are ready to sell — Ksh ${fmt(row.animalSales)} in asset income this month.` });
+  if (m === S.breakEvenMonth) events.push({ icon:'🎉', headline:'You\'ve broken even!', body:`Month ${m} — your cumulative income has now fully recovered your Ksh 60,000 investment. Everything from here is profit.` });
+  if (row.herdSize > (prev?.herdSize || 2) + 1) events.push({ icon:'🌿', headline:`Herd grows to ${row.herdSize}`, body:'New kids were born this month. Female kids you keep become future milking does, compounding your income stream.' });
+
+  if (events.length > 0) return events[events.length - 1];
+
+  // Default context
+  if (row.netIncome > 0) return { icon:'📈', headline:`Ksh ${fmt(row.netIncome)} net income`, body:`Milk, manure, and sales are outpacing your costs. Cumulative income: Ksh ${fmt(row.cumulativeNet + 60000)}.` };
+  return { icon:'⏳', headline:'Building momentum', body:`Your farm generates Ksh ${fmt(row.grossIncome)} this month. Monthly costs are Ksh ${fmt(row.feedCosts)}. Income will grow as the herd expands.` };
+}
+
+// ─── SIMULATION ───────────────────────────────────────────────────────────────
+function runSim() {
+  S.milkPrice = +document.getElementById('milk-price').value;
+  S.feedCost  = +document.getElementById('feed-cost').value;
+  S.kidPrice  = +document.getElementById('kid-price').value;
+
+  const MANURE_PRICE = 150;
+  const MANURE_BAGS_PER_GOAT_PER_MONTH = 2; // 1 bag × 2 cycles/month
+
+  // Build initial does
+  const does = [
+    { breed: S.breed1, lactating: S.lact1, lactStart: S.lact1 ? 1 : (BREEDS[S.breed1].lact - 12 > 0 ? BREEDS[S.breed1].lact - 12 : 3), nextBreed: S.maleAsset ? 2 : 999, ageMonths: 12 },
+    { breed: S.breed2, lactating: S.lact2, lactStart: S.lact2 ? 1 : (BREEDS[S.breed2].lact - 12 > 0 ? BREEDS[S.breed2].lact - 12 : 3), nextBreed: S.maleAsset ? 2 : 999, ageMonths: 12 },
+  ];
+
+  // Assign lactation windows
+  does.forEach(d => {
+    d.lactEnd = d.lactStart + 5;
+    d.gestStart = d.nextBreed;
+    d.birthMonth = d.gestStart + 5;
+    d.nextLactStart = d.birthMonth + 0;
+  });
+
+  let pendingKids = [];
+  let herdDoes = does.map((d,i) => ({ ...d, id: i }));
+  let soldMales = [];
+  let kidCounter = 10;
+
+  const data = [];
+
+  for (let m = 1; m <= S.simMonths; m++) {
+    // Process births
+    const borns = pendingKids.filter(k => k.birthMonth === m);
+    pendingKids = pendingKids.filter(k => k.birthMonth !== m);
+
+    borns.forEach(kid => {
+      const isFemale = Math.random() < 0.5;
+      const retain = isFemale && Math.random() < 0.5;
+      const breed = kid.parentBreed;
+      const bInfo = BREEDS[breed] || BREEDS['Crossbreed'];
+
+      if (retain) {
+        const lStart = m + bInfo.lact;
+        herdDoes.push({
+          id: kidCounter++,
+          breed,
+          lactStart: lStart,
+          lactEnd: lStart + 5,
+          nextBreed: S.maleAsset ? lStart - 5 : 999,
+          birthMonth: lStart,
+          nextLactStart: lStart,
+          ageMonths: 0,
+          bornM: m,
+        });
+      } else if (!isFemale) {
+        // Male kid — sold at m+5
+        soldMales.push({ saleMonth: m + 5 });
+      }
+
+      // Doe that gave birth starts next cycle
+      if (kid.doeid !== undefined) {
+        const doe = herdDoes.find(d => d.id === kid.doeid);
+        if (doe && S.maleAsset) {
+          doe.nextBreed = m + 2;
+          doe.lactStart = m;
+          doe.lactEnd = m + 5;
+          const nextBirth = m + 7;
+          pendingKids.push({ birthMonth: nextBirth, parentBreed: doe.breed, doeid: doe.id });
+        }
+      }
+    });
+
+    // Schedule first pregnancies
+    herdDoes.forEach(doe => {
+      if (S.maleAsset && m === 2 && doe.nextBreed === 2 && !doe.pendingBirth) {
+        doe.pendingBirth = true;
+        pendingKids.push({ birthMonth: 7, parentBreed: doe.breed, doeid: doe.id });
+      }
+    });
+
+    // Milk income
+    let milkIncome = 0;
+    let lactCount = 0;
+    herdDoes.forEach(doe => {
+      if (m >= doe.lactStart && m < (doe.lactEnd || doe.lactStart + 5)) {
+        const b = BREEDS[doe.breed] || BREEDS['Crossbreed'];
+        milkIncome += b.milk * 30 * S.milkPrice;
+        lactCount++;
+      }
+    });
+
+    // Manure income (all active animals + group buck)
+    const totalAnimals = herdDoes.length + (S.maleAsset ? 1 : 0);
+    const manureIncome = totalAnimals * MANURE_BAGS_PER_GOAT_PER_MONTH * MANURE_PRICE;
+
+    // Animal sales this month
+    const sales = soldMales.filter(k => k.saleMonth === m).length * S.kidPrice;
+    soldMales = soldMales.filter(k => k.saleMonth !== m);
+
+    // Costs
+    const feedCosts = totalAnimals * S.feedCost;
+
+    const grossIncome = milkIncome + manureIncome + sales;
+    const netIncome = grossIncome - feedCosts;
+
+    data.push({
+      m,
+      herdSize: totalAnimals,
+      lactating: lactCount,
+      milkIncome: Math.round(milkIncome),
+      manureIncome: Math.round(manureIncome),
+      animalSales: Math.round(sales),
+      grossIncome: Math.round(grossIncome),
+      feedCosts: Math.round(feedCosts),
+      netIncome: Math.round(netIncome),
+    });
+  }
+
+  // Cumulative
+  let cum = 0, be = null;
+  data.forEach(row => {
+    cum += row.netIncome;
+    row.cumulativeNet = Math.round(cum);
+    if (cum >= 60000 && !be) be = row.m;
+  });
+
+  S.simData = data;
+  S.breakEvenMonth = be;
+
+  updateAll();
+}
+
+// ─── UPDATE UI ────────────────────────────────────────────────────────────────
+function updateAll() {
+  const last = S.simData[S.simData.length - 1];
+  const cur = S.simData[S.currentMonth - 1] || S.simData[0];
+  const prev = S.simData[S.currentMonth - 2];
+
+  // Outcomes
+  document.getElementById('oc-breakeven').textContent = S.breakEvenMonth ? `Month ${S.breakEvenMonth}` : '> 36 mo';
+  document.getElementById('oc-be-sub').textContent = S.breakEvenMonth
+    ? `You recover your full investment in month ${S.breakEvenMonth} — ${36 - S.breakEvenMonth} months of pure profit follow.`
+    : 'Try increasing milk price or reducing feed costs.';
+  document.getElementById('oc-profit').textContent = fmtK(last.cumulativeNet);
+  document.getElementById('oc-herd').textContent = last.herdSize;
+
+  // Timeline
+  document.getElementById('month-big').textContent = `Month ${cur.m}`;
+  document.getElementById('month-sub').textContent = monthName(cur.m);
+
+  const pct = Math.min(100, Math.max(0, Math.round((cur.cumulativeNet + 60000) / 60000 * 100)));
+  document.getElementById('recovery-pct').textContent = pct + '%';
+  const bar = document.getElementById('recovery-bar');
+  bar.style.width = pct + '%';
+  bar.className = 'progress-bar' + (pct >= 100 ? ' over' : '');
+
+  // Story
+  const story = getStory(cur.m, cur, prev);
+  document.getElementById('story-icon').textContent = story.icon;
+  document.getElementById('story-headline').textContent = story.headline;
+  document.getElementById('story-body').textContent = story.body;
+
+  // Stats
+  document.getElementById('s-herd').textContent = cur.herdSize;
+  document.getElementById('s-milk').textContent = cur.milkIncome > 0 ? fmtK(cur.milkIncome) : '—';
+  document.getElementById('s-manure').textContent = fmtK(cur.manureIncome);
+  const netEl = document.getElementById('s-net');
+  netEl.textContent = (cur.netIncome >= 0 ? '+' : '') + fmtK(cur.netIncome);
+  netEl.style.color = cur.netIncome >= 0 ? 'var(--forest)' : 'var(--terra)';
+
+  // Milestones
+  renderMilestones(cur.m);
+
+  // Charts
+  renderCharts();
+}
+
+function monthName(m) {
+  const msgs = {
+    1:'Goats arrive, manure income starts',
+    2: S.maleAsset ? 'Group buck arrives — breeding begins' : 'Building momentum',
+    3:'Herd settling in',
+  };
+  if (msgs[m]) return msgs[m];
+  if (m === S.breakEvenMonth) return 'Break-even reached!';
+  return `Month ${m} of ${S.simMonths}`;
+}
+
+// ─── MILESTONES ───────────────────────────────────────────────────────────────
+function renderMilestones(curM) {
+  const ms = [{ m:1, label:'Goats arrive' }];
+  if (S.maleAsset) ms.push({ m:2, label:'Buck joins' });
+
+  const firstMilk = S.simData.find(d => d.milkIncome > 0);
+  if (firstMilk) ms.push({ m: firstMilk.m, label:'First milk' });
+
+  const firstSale = S.simData.find(d => d.animalSales > 0);
+  if (firstSale) ms.push({ m: firstSale.m, label:'First kids sold' });
+
+  if (S.breakEvenMonth) ms.push({ m: S.breakEvenMonth, label:'Break-even!' });
+
+  const startH = S.simData[0]?.herdSize || 2;
+  const doubled = S.simData.find(d => d.herdSize >= startH * 2);
+  if (doubled) ms.push({ m: doubled.m, label:'Herd doubled' });
+
+  document.getElementById('milestone-pills').innerHTML = ms.sort((a,b)=>a.m-b.m).map(p => {
+    const done = curM >= p.m, now = curM === p.m;
+    return `<div class="pill ${done?'done':''} ${now?'now':''}"><span class="pill-dot"></span>M${p.m}: ${p.label}</div>`;
+  }).join('');
+}
+
+// ─── CHARTS ──────────────────────────────────────────────────────────────────
+function renderCharts() {
+  renderMainChart();
+  renderHerdChart();
+}
+
+function renderMainChart() {
+  if (S.charts.main) { S.charts.main.destroy(); S.charts.main = null; }
+  const ctx = document.getElementById('main-chart');
+  const data = S.simData;
+  const curM = S.currentMonth;
+
+  S.charts.main = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(d => `M${d.m}`),
+      datasets: [
+        {
+          label: 'Cumulative income',
+          data: data.map(d => d.cumulativeNet + 60000),
+          borderColor: '#3d7a54',
+          backgroundColor: data.map((d,i) => i < curM ? 'rgba(61,122,84,0.12)' : 'rgba(61,122,84,0.04)'),
+          fill: true,
+          tension: 0.4,
+          pointRadius: data.map((d,i) => i === curM-1 ? 6 : 0),
+          pointBackgroundColor: '#3d7a54',
+          borderWidth: 2.5,
+        },
+        {
+          label: 'Investment Ksh 60,000',
+          data: data.map(() => 60000),
+          borderColor: '#c4622d',
+          borderDash: [6,3],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        },
+        {
+          label: 'Monthly feed costs',
+          data: data.map(d => d.feedCosts),
+          borderColor: '#d4922a',
+          borderDash: [3,3],
+          borderWidth: 1,
+          pointRadius: 0,
+          fill: false,
+          yAxisID: 'y2',
+        },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { mode:'index', callbacks: { label: c => `${c.dataset.label}: Ksh ${fmt(c.raw)}` } }
+      },
+      scales: {
+        x: { ticks: { font:{size:10}, autoSkip:true, maxRotation:0 }, grid:{ display:false } },
+        y: { ticks: { callback: v => `K${Math.round(v/1000)}`, font:{size:10} }, grid: { color:'rgba(0,0,0,0.04)' } },
+        y2: { position:'right', ticks: { callback: v => `K${Math.round(v/1000)}`, font:{size:10} }, grid:{ display:false } },
+      },
+      animation: { duration: 250 },
+    }
+  });
+}
+
+function renderHerdChart() {
+  if (S.charts.herd) { S.charts.herd.destroy(); S.charts.herd = null; }
+  const ctx = document.getElementById('herd-chart');
+  const data = S.simData;
+
+  S.charts.herd = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(d => `M${d.m}`),
+      datasets: [
+        {
+          label: 'Total animals',
+          data: data.map(d => d.herdSize),
+          borderColor: '#2d5a3d',
+          backgroundColor: 'rgba(45,90,61,0.08)',
+          fill: true,
+          tension: 0,
+          stepped: true,
+          pointRadius: 0,
+          borderWidth: 2,
+        },
+        {
+          label: 'Milking does',
+          data: data.map(d => d.lactating),
+          borderColor: '#3d7a54',
+          borderDash: [4,2],
+          fill: false,
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 1.5,
+        },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend:{ display:false }, tooltip:{ mode:'index' } },
+      scales: {
+        x: { ticks:{ font:{size:10}, autoSkip:true, maxRotation:0 }, grid:{ display:false } },
+        y: { ticks:{ stepSize:1, font:{size:10} }, grid:{ color:'rgba(0,0,0,0.04)' } },
+      },
+      animation:{ duration:250 },
+    }
+  });
+}
+
+// ─── TIMELINE PLAYBACK ────────────────────────────────────────────────────────
+function setMonth(m) {
+  S.currentMonth = m;
+  document.getElementById('timeline').value = m;
+  updateAll();
+}
+
+function togglePlay() {
+  if (S.playing) {
+    clearInterval(S.playTimer);
+    S.playing = false;
+    document.getElementById('play-btn').textContent = '▶';
+  } else {
+    if (S.currentMonth >= S.simMonths) setMonth(1);
+    S.playing = true;
+    document.getElementById('play-btn').textContent = '⏸';
+    S.playTimer = setInterval(() => {
+      if (S.currentMonth >= S.simMonths) {
+        clearInterval(S.playTimer);
+        S.playing = false;
+        document.getElementById('play-btn').textContent = '▶';
+        return;
+      }
+      setMonth(S.currentMonth + 1);
+    }, 450);
+  }
+}
+
+// ─── GOAT UI HANDLERS ────────────────────────────────────────────────────────
+function setLact(n, val) {
+  if (n === 1) {
+    S.lact1 = val;
+    document.getElementById('lact1-yes').className = 'lact-opt' + (val ? ' active' : '');
+    document.getElementById('lact1-no').className = 'lact-opt' + (!val ? ' active' : '');
+    document.getElementById('hint1').textContent = val
+      ? 'She starts producing milk right away. Income from Month 1.'
+      : `She needs time to mature. First milk around Month ${Math.max(2, BREEDS[S.breed1].lact - 10)}.`;
+  } else {
+    S.lact2 = val;
+    document.getElementById('lact2-yes').className = 'lact-opt' + (val ? ' active' : '');
+    document.getElementById('lact2-no').className = 'lact-opt' + (!val ? ' active' : '');
+    document.getElementById('hint2').textContent = val
+      ? 'She starts producing milk right away. Income from Month 1.'
+      : `She needs time to mature. First milk around Month ${Math.max(2, BREEDS[S.breed2].lact - 10)}.`;
+  }
+  runSim();
+}
+
+function onGoatChange() {
+  S.breed1 = document.getElementById('breed1').value;
+  S.breed2 = document.getElementById('breed2').value;
+  S.maleAsset = document.getElementById('toggle-male').checked;
+
+  // Toggle visual
+  const thumb = document.getElementById('toggle-thumb');
+  const track = document.getElementById('toggle-track');
+  if (thumb && track) {
+    thumb.style.left = S.maleAsset ? '23px' : '3px';
+    track.style.background = S.maleAsset ? 'var(--forest2)' : 'var(--cream3)';
+  }
+
+  runSim();
+}
+
+// ─── FORMAT HELPERS ───────────────────────────────────────────────────────────
+function fmt(n) { return Math.round(n).toLocaleString('en-KE'); }
+function fmtK(n) {
+  const v = Math.round(n);
+  if (Math.abs(v) >= 1000) return (v >= 0 ? '' : '-') + 'Ksh ' + (Math.abs(v)/1000).toFixed(1) + 'K';
+  return 'Ksh ' + v.toLocaleString();
+}
+
+// ─── TICK MARKS ──────────────────────────────────────────────────────────────
+function buildTicks() {
+  const ticks = [];
+  for (let m = 1; m <= 36; m += 6) ticks.push(`M${m}`);
+  ticks.push('M36');
+  document.getElementById('tick-row').innerHTML = [...new Set(ticks)].map(t => `<span>${t}</span>`).join('');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+buildTicks();
+runSim();
+setMonth(1);
+</script>
 </body>
 </html>
